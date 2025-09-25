@@ -7,4 +7,5 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App />
   </StrictMode>,
+  //pagina que serão renderizadas as rotas
 )
