@@ -15,12 +15,25 @@ function App() {
   const [produtos, setProdutos] = useState([]);
   const [produtoSelecionado, setProdutoSelecionado] = useState(null);
   const [mensagem, setMensagem] = useState('');
+  const [mostrarLista, setMostrarLista] = useState(false);
+
   const nomeRef = useRef();
   const precoRef = useRef();
   const quantidadeRef = useRef();
   const descricaoRef = useRef();
 
-  const mostrarMensagem = (msg) => { setMensagem(msg); }
+  //definindo uma função para apagar os campos do formulário
+  const limparFormulario = () => {
+    nomeRef.current.value = '';
+    precoRef.current.value = '';
+    quantidadeRef.current.value = '';
+    descricaoRef.current.value = '';
+  };
+
+  const mostrarMensagem = (msg, tempo = 10000) => {
+    setMensagem(msg);
+    setTimeout(() => setMensagem(''), tempo);
+  }
 
   //efetuar o preenchimento dos campos do formulário ao selecionar um produto
   useEffect(() => {
@@ -30,10 +43,7 @@ function App() {
       quantidadeRef.current.value = produtoSelecionado.quantidade;
       descricaoRef.current.value = produtoSelecionado.descricao;
     } else {
-      nomeRef.current.value = '';
-      precoRef.current.value = '';
-      quantidadeRef.current.value = '';
-      descricaoRef.current.value = '';
+      limparFormulario();
     }
 
   }, [produtoSelecionado]);
@@ -67,6 +77,7 @@ function App() {
       const novoProduto = await createProduto(produto);
       setProdutos(prev => [...prev, novoProduto]);
       mostrarMensagem('Produto criado com sucesso');
+      setProdutoSelecionado(null);
     } catch (error) {
       mostrarMensagem('Erro ao criar produto');
     }
@@ -77,7 +88,11 @@ function App() {
     try {
       const produtoAtualizado = await updateProduto(id, produto);
       setProdutos(prev => prev.map(p => p.id === id ? produtoAtualizado : p));
+      //vai atualizar a descrição do produto assim que a atualização for feita
+      if (produtoSelecionado?.id === id) { setProdutoSelecionado(produtoAtualizado) };
+      setProdutoSelecionado(null);
       mostrarMensagem('Produto atualizado com sucesso');
+
     } catch (error) {
       mostrarMensagem(`Erro ao atualizar produto ${id}`);
     }
@@ -91,7 +106,6 @@ function App() {
       mostrarMensagem('Produto deletado com sucesso');
       if (produtoSelecionado?.id === id) setProdutoSelecionado(null);
     } catch (error) {
-      console.error(`Erro ao deletar produto ${id}:`, error);
       mostrarMensagem(`Erro ao deletar produto ${id}`);
     }
   };
@@ -114,19 +128,25 @@ function App() {
 
 
   return (
-    <div className="App">
-      <h1>Gerenciamento de Produtos</h1>
+    <div className="container-fluid">
+      <h1>Gerenciamento de Produtos</h1><br />
 
-      <button onClick={listarProdutos}>Listar Produtos</button>
-      <ul>
-        {produtos.map(produto => (
-          <li key={produto.id}>
-            {produto.nome} - ${produto.preco}
-            <button onClick={() => buscarProdutoPorId(produto.id)}>Ver Detalhes</button>
-            <button onClick={() => deletarProduto(produto.id)}>Deletar</button>
-          </li>
-        ))}
-      </ul>
+      <button onClick={() => {
+        if (!mostrarLista) listarProdutos();
+        setMostrarLista(prev => !prev);
+      }} className="btn btn-primary" > {mostrarLista ? 'Ocultar' : 'Mostrar'} Produtos</button>
+
+      {mostrarLista && (
+        <ul>
+          {produtos.map(produto => (
+            <li key={produto.id}>
+              {produto.nome} - ${produto.preco}
+              <button className="btn btn-info" onClick={() => buscarProdutoPorId(produto.id)}>Ver Detalhes</button>
+              <button className="btn btn-danger" onClick={() => deletarProduto(produto.id)}>Deletar</button>
+            </li>
+          ))}
+        </ul>
+      )}
 
       {produtoSelecionado && (
         <div>
@@ -135,17 +155,17 @@ function App() {
           <p>Preço: ${produtoSelecionado.preco}</p>
           <p>Quantidade: ${produtoSelecionado.quantidade}</p>
           <p>Descrição: {produtoSelecionado.descricao}</p>
-          <button onClick={() => setProdutoSelecionado(null)}>Fechar</button>
+          <button className="btn btn-success" onClick={() => setProdutoSelecionado(null)}>Fechar</button>
         </div>
       )}
 
-      <h2>{produtoSelecionado ? 'Atualizar Produto' : 'Criar Produto'}</h2>
+      <h2 className='AtualizaCriaProd'>{produtoSelecionado ? 'Atualizar Produto' : 'Criar Produto'}</h2>
       <form onSubmit={handleSubmit}>
         <input type="text" placeholder="Nome" ref={nomeRef} required />
         <input type="number" step="0.01" placeholder="Preço" ref={precoRef} required />
         <input type="number" placeholder="Quantidade" ref={quantidadeRef} required />
         <input type="text" placeholder="Descrição" ref={descricaoRef} required />
-        <button type="submit">{produtoSelecionado ? 'Atualizar' : 'Criar'} Produto</button>
+        <button type="submit" className="btn btn-success">{produtoSelecionado ? 'Atualizar' : 'Criar'} Produto</button>
       </form>
 
       {mensagem && <p>{mensagem}</p>}
