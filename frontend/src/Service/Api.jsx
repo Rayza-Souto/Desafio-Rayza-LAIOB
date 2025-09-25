@@ -27,13 +27,13 @@ export const getProdutoById = async (id) => {
 
 //função para criar um novo produto
 export const createProduto = async (produto) => {
-    try {
-        const response = await axios.post(apiUrl, produto);
-        return response.data;
-    } catch (error) {
-        console.error('Erro ao criar produto:', error);
-        throw error;
-    }
+  try {
+    const response = await axios.post(apiUrl, produto);
+    return response.data; // retorna o produto criado com ID
+  } catch (error) {
+    console.error('Erro ao criar produto:', error);
+    throw error;
+  }
 };
 
 //função para atualizar um produto existente

@@ -1,6 +1,14 @@
 import { useState, useRef } from 'react'
 import './App.css'
 
+import {
+  getProdutos,
+  getProdutoById,
+  createProduto,
+  updateProduto,
+  deleteProduto
+} from './Service/Api.jsx';
+
 function App() {
 
   //definindo o estado inicial dos produtos
@@ -9,13 +17,13 @@ function App() {
   const [mensagem, setMensagem] = useState('');
   const nomeRef = useRef();
   const precoRef = useRef();
+  const quantidadeRef = useRef();
   const descricaoRef = useRef();
 
   //função para listar todos os produtos
   const listarProdutos = async () => {
     try {
-      const response = await fetch(import.meta.env.VITE_API_URL);
-      const data = await response.json();
+      const data = await getProdutos();
       setProdutos(data);
     } catch (error) {
       console.error('Erro ao listar produtos:', error);
@@ -26,11 +34,7 @@ function App() {
   //função para buscar um produto pelo ID
   const buscarProdutoPorId = async (id) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/${id}`);
-      if (!response.ok) {
-        throw new Error('Produto não encontrado');
-      }
-      const data = await response.json();
+      const data = await getProdutoById(id);
       setProdutoSelecionado(data);
       setMensagem('');
     } catch (error) {
@@ -42,19 +46,9 @@ function App() {
   //função para criar um novo produto
   const criarProduto = async (produto) => {
     try {
-      const response = await fetch(import.meta.env.VITE_API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(produto),
-      });
-      if (!response.ok) {
-        throw new Error('Erro ao criar produto');
-      }
-      const data = await response.json();
+      const novoProduto = await createProduto(produto);
+      setProdutos(prev => [...prev, novoProduto]);
       setMensagem('Produto criado com sucesso');
-      listarProdutos();
     } catch (error) {
       console.error('Erro ao criar produto:', error);
       setMensagem('Erro ao criar produto');
@@ -64,19 +58,9 @@ function App() {
   //função para atualizar um produto existente
   const atualizarProduto = async (id, produto) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(produto),
-      });
-      if (!response.ok) {
-        throw new Error('Erro ao atualizar produto');
-      }
-      const data = await response.json();
+      const produtoAtualizado = await updateProduto(id, produto);
+      setProdutos(prev => prev.map(p => p.id === id ? produtoAtualizado : p));
       setMensagem('Produto atualizado com sucesso');
-      listarProdutos();
     } catch (error) {
       console.error(`Erro ao atualizar produto ${id}:`, error);
       setMensagem(`Erro ao atualizar produto ${id}`);
@@ -86,19 +70,39 @@ function App() {
   //função para deletar um produto
   const deletarProduto = async (id) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/${id}`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) {
-        throw new Error('Erro ao deletar produto');
-      }
+      await deleteProduto(id);
+      setProdutos(prev => prev.filter(p => p.id !== id));
       setMensagem('Produto deletado com sucesso');
-      listarProdutos();
+      if (produtoSelecionado? .id === id) setProdutoSelecionado(null); 
     } catch (error) {
       console.error(`Erro ao deletar produto ${id}:`, error);
       setMensagem(`Erro ao deletar produto ${id}`);
     }
   };
+
+  //submit do formulário
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const produto = {
+      nome: nomeRef.current.value,
+      preco: parseFloat(precoRef.current.value),
+      quantidade: parseInt(quantidadeRef.current.value),
+      descricao: descricaoRef.current.value,
+    };
+    if (produtoSelecionado) {
+      atualizarProduto(produtoSelecionado.id, produto);
+    } else {
+      criarProduto(produto);
+    }
+
+    //limpar formulário
+    nomeRef.current.value = '';
+    precoRef.current.value = '';
+    quantidadeRef.current.value = '';
+    descricaoRef.current.value = '';
+    setProdutoSelecionado(null);
+  };
+
 
   return (
     <div className="App">
@@ -120,6 +124,7 @@ function App() {
           <h2>Detalhes do Produto</h2>
           <p>Nome: {produtoSelecionado.nome}</p>
           <p>Preço: ${produtoSelecionado.preco}</p>
+          <p>Quantidade: ${produtoSelecionado.quantidade}</p>
           <p>Descrição: {produtoSelecionado.descricao}</p>
           <button onClick={() => setProdutoSelecionado(null)}>Fechar</button>
         </div>
@@ -132,6 +137,7 @@ function App() {
           const produto = {
             nome: nomeRef.current.value,
             preco: parseFloat(precoRef.current.value),
+            quantidade: parseInt(quantidadeRef.current.value),
             descricao: descricaoRef.current.value,
           };
           if (produtoSelecionado) {
@@ -141,19 +147,21 @@ function App() {
           }
           nomeRef.current.value = '';
           precoRef.current.value = '';
+          quantidadeRef.current.value = '';
           descricaoRef.current.value = '';
           setProdutoSelecionado(null);
         }}
       >
         <input type="text" placeholder="Nome" ref={nomeRef} required />
         <input type="number" placeholder="Preço" ref={precoRef} required />
+        <input type="number" placeholder="Quantidade" ref={quantidadeRef} required />
         <input type="text" placeholder="Descrição" ref={descricaoRef} required />
         <button type="submit">{produtoSelecionado ? 'Atualizar' : 'Criar'} Produto</button>
       </form>
 
       {mensagem && <p>{mensagem}</p>}
     </div>
-  );  
+  );
 
 }
 
