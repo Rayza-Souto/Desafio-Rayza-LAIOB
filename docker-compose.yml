@@ -1,23 +1,37 @@
 services:
-  go-app:
-    container_name: go-app
-    image: go-api-tutorial
-    build: .
-    ports:
-      - "8000:8000"
-    depends_on:
-      - go_db
   go_db:
     container_name: go_db
     image: postgres:15
     environment:
-      POSTGRES_PASSWORD: Juliano@0210
       POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Juliano@0210
       POSTGRES_DB: postgres
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  go-app:
+    container_name: go-app
+    build: ./backend          
+    ports:
+      - "8000:8080"           
+    environment:
+      DB_HOST: go_db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: Juliano@0210
+      DB_NAME: postgres
+    depends_on:
+      - go_db
+
+  frontend:
+    container_name: react-app
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - go-app
+
 volumes:
-  pgdata: {}
+  pgdata:
