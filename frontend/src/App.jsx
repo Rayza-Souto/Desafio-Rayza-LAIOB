@@ -38,6 +38,7 @@ function App() {
 
   }, [produtoSelecionado]);
 
+
   //função para listar todos os produtos
   const listarProdutos = async () => {
     try {
