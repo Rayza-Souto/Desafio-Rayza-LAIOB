@@ -1,0 +1,24 @@
+# Ignorar binários compilados do Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Diretório do Go Modules cache
+/vendor/
+
+# Arquivos de configuração sensíveis
+.env
+*.env
+
+# Logs e arquivos temporários
+*.log
+*.tmp
+*.swp
+
+# Diretórios de build
+bin/
+dist/

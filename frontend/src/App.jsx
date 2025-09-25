@@ -1,34 +1,79 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState, useRef } from 'react'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  // Estado para armazenar a lista de produtos
+  const [products, setProducts] = useState([]);
+  const [nome, setNome] = useState('');
+  const [preco, setPreco] = useState('');
+  const [quantidade, setQuantidade] = useState('');
+  const [descricao, setDescricao] = useState('');
+
+  // Referência para o próximo ID do produto
+  const nextID = useRef(1);
+
+  // Função para adicionar um novo produto
+  const addProduct = (e) => {
+    e.preventDefault();
+
+    if (!nome || !preco || !quantidade || !descricao) return;
+
+    // Adiciona o novo produto à lista
+    setProducts([...products, { id: nextID.current, nome, preco, quantidade, descricao }]);
+    nextID.current += 1; // Incrementa o ID para o próximo produto
+    setNome('');
+    setPreco('');
+    setQuantidade('');
+    setDescricao('');
+  };
+
+  const removeProduct = (id) => {
+    setProducts(products.filter(product => product.id !== id));
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div style={{ padding: '20px' }}>
+      <h1>Controle de Produtos</h1>
+
+      <form onSubmit={addProduct}>
+        <input
+          type="text"
+          placeholder="Nome do produto"
+          value={nome}
+          onChange={(e) => setNome(e.target.value)}
+        />
+        <input
+          type="number"
+          placeholder="Preço"
+          value={preco}
+          onChange={(e) => setPreco(e.target.value)}
+        />
+        <input
+          type="number"
+          placeholder="Quantidade"
+          value={quantidade}
+          onChange={(e) => setQuantidade(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Descrição"
+          value={descricao}
+          onChange={(e) => setDescricao(e.target.value)}
+        />
+        <button type="submit">Adicionar</button>
+      </form>
+
+      <ul>
+        {products.map(product => (
+          <li key={product.id}>
+            {product.nome} - R$ {product.preco} - Quantidade: {product.quantidade} - {product.descricao}
+            <button onClick={() => removeProduct(product.id)}>Remover</button>
+          </li>
+        ))}
+      </ul>
+      
+    </div>
   )
 }
 

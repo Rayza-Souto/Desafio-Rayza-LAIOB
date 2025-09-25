@@ -4,19 +4,21 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/lib/pq"
-)
-
-// definir as constantes de conexão com o banco de dados
-const (
-	host     = "go_db"
-	port     = 5432
-	user     = "postgres"
-	password = "Juliano@0210"
-	dbname   = "postgres"
+	"github.com/joho/godotenv"
 )
 
 // criar a função que conecta ao banco de dados
 func ConnectDB() (*sql.DB, error) {
+
+	//carrega as variáveis de ambiente do arquivo .env
+	_ = godotenv.Load()
+
+	host := os.Getenv("DB_HOST")
+	port := os.Getenv("DB_PORT")
+	user := os.Getenv("DB_USER")
+	password := os.Getenv("DB_PASSWORD")
+	dbname := os.Getenv("DB_NAME")
+
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
