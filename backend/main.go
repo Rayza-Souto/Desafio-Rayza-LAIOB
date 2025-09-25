@@ -5,6 +5,7 @@ import (
 	"github.com/Rayza-Souto/Desafio-Rayza-LAIOB/backend/db"
 	"github.com/Rayza-Souto/Desafio-Rayza-LAIOB/backend/repository"
 	"github.com/Rayza-Souto/Desafio-Rayza-LAIOB/backend/usecase"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,6 +19,14 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	// Habilitando CORS para permitir requisições do frontend
+	server.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173"}, // URL do seu frontend
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowHeaders:     []string{"Origin", "Content-Type"},
+		AllowCredentials: true,
+	}))
 
 	//Camada de repository
 	ProductRepository := repository.NewProductRepository(dbConnection)
