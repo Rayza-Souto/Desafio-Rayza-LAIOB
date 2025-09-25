@@ -9,7 +9,7 @@ services:
       - go_db
   go_db:
     container_name: go_db
-    image: postgres:12
+    image: postgres:15
     environment:
       POSTGRES_PASSWORD: Juliano@0210
       POSTGRES_USER: postgres
