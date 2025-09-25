@@ -43,6 +43,8 @@ CREATE TABLE produtos (
   descricao TEXT
 );
 
+---
+
 ## Variáveis de ambiente necessárias para o backend (.env):
 
 DB_HOST=localhost
