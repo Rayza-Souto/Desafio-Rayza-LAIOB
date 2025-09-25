@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import './App.css'
 
 import {
@@ -20,17 +20,32 @@ function App() {
   const quantidadeRef = useRef();
   const descricaoRef = useRef();
 
+  const mostrarMensagem = (msg) => { setMensagem(msg); }
+
+  //efetuar o preenchimento dos campos do formulário ao selecionar um produto
+  useEffect(() => {
+    if (produtoSelecionado) {
+      nomeRef.current.value = produtoSelecionado.nome;
+      precoRef.current.value = produtoSelecionado.preco;
+      quantidadeRef.current.value = produtoSelecionado.quantidade;
+      descricaoRef.current.value = produtoSelecionado.descricao;
+    } else {
+      nomeRef.current.value = '';
+      precoRef.current.value = '';
+      quantidadeRef.current.value = '';
+      descricaoRef.current.value = '';
+    }
+
+  }, [produtoSelecionado]);
+
   //função para listar todos os produtos
   const listarProdutos = async () => {
     try {
       const data = await getProdutos();
       setProdutos(data);
-      if (data.length === 0) {
-        setMensagem('Nenhum produto encontrado');
-      }
+      mostrarMensagem(data.length === 0 ? 'Nenhum produto encontrado' : '');
     } catch (error) {
-      console.error('Erro ao listar produtos:', error);
-      setMensagem('Erro ao listar produtos');
+      mostrarMensagem('Erro ao listar produtos');
     }
   };
 
@@ -39,10 +54,9 @@ function App() {
     try {
       const data = await getProdutoById(id);
       setProdutoSelecionado(data);
-      setMensagem('');
+      mostrarMensagem('');
     } catch (error) {
-      console.error(`Erro ao buscar produto ${id}:`, error);
-      setMensagem(`Erro ao buscar produto ${id}`);
+      mostrarMensagem(`Erro ao buscar produto ${id}`);
     }
   };
 
@@ -51,10 +65,9 @@ function App() {
     try {
       const novoProduto = await createProduto(produto);
       setProdutos(prev => [...prev, novoProduto]);
-      setMensagem('Produto criado com sucesso');
+      mostrarMensagem('Produto criado com sucesso');
     } catch (error) {
-      console.error('Erro ao criar produto:', error);
-      setMensagem('Erro ao criar produto');
+      mostrarMensagem('Erro ao criar produto');
     }
   };
 
@@ -63,10 +76,9 @@ function App() {
     try {
       const produtoAtualizado = await updateProduto(id, produto);
       setProdutos(prev => prev.map(p => p.id === id ? produtoAtualizado : p));
-      setMensagem('Produto atualizado com sucesso');
+      mostrarMensagem('Produto atualizado com sucesso');
     } catch (error) {
-      console.error(`Erro ao atualizar produto ${id}:`, error);
-      setMensagem(`Erro ao atualizar produto ${id}`);
+      mostrarMensagem(`Erro ao atualizar produto ${id}`);
     }
   };
 
@@ -75,11 +87,11 @@ function App() {
     try {
       await deleteProduto(id);
       setProdutos(prev => prev.filter(p => p.id !== id));
-      setMensagem('Produto deletado com sucesso');
+      mostrarMensagem('Produto deletado com sucesso');
       if (produtoSelecionado?.id === id) setProdutoSelecionado(null);
     } catch (error) {
       console.error(`Erro ao deletar produto ${id}:`, error);
-      setMensagem(`Erro ao deletar produto ${id}`);
+      mostrarMensagem(`Erro ao deletar produto ${id}`);
     }
   };
 
@@ -97,13 +109,6 @@ function App() {
     } else {
       criarProduto(produto);
     }
-
-    //limpar formulário
-    nomeRef.current.value = '';
-    precoRef.current.value = '';
-    quantidadeRef.current.value = '';
-    descricaoRef.current.value = '';
-    setProdutoSelecionado(null);
   };
 
 
@@ -133,30 +138,10 @@ function App() {
         </div>
       )}
 
-      <h2>Criar/Atualizar Produto</h2>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          const produto = {
-            nome: nomeRef.current.value,
-            preco: parseFloat(precoRef.current.value),
-            quantidade: parseInt(quantidadeRef.current.value),
-            descricao: descricaoRef.current.value,
-          };
-          if (produtoSelecionado) {
-            atualizarProduto(produtoSelecionado.id, produto);
-          } else {
-            criarProduto(produto);
-          }
-          nomeRef.current.value = '';
-          precoRef.current.value = '';
-          quantidadeRef.current.value = '';
-          descricaoRef.current.value = '';
-          setProdutoSelecionado(null);
-        }}
-      >
+      <h2>{produtoSelecionado ? 'Atualizar Produto' : 'Criar Produto'}</h2>
+      <form onSubmit={handleSubmit}>
         <input type="text" placeholder="Nome" ref={nomeRef} required />
-        <input type="text" inputMode='numeric' placeholder="Preço" ref={precoRef} required />
+        <input type="number" step="0.01" placeholder="Preço" ref={precoRef} required />
         <input type="number" placeholder="Quantidade" ref={quantidadeRef} required />
         <input type="text" placeholder="Descrição" ref={descricaoRef} required />
         <button type="submit">{produtoSelecionado ? 'Atualizar' : 'Criar'} Produto</button>
