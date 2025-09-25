@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -12,8 +13,13 @@ import (
 // criar a função que conecta ao banco de dados
 func ConnectDB() (*sql.DB, error) {
 
-	//carrega as variáveis de ambiente do arquivo .env
-	_ = godotenv.Load()
+	//carrega o arquivo .env
+	err := godotenv.Load()
+
+	//se não encontrar o arquivo .env, exibe uma mensagem de erro
+	if err != nil {
+		log.Println("Arquivo .env não encontrado, utilizando variáveis de ambiente do sistema")
+	}
 
 	//pega as variáveis de ambiente
 	host := os.Getenv("DB_HOST")
@@ -27,7 +33,7 @@ func ConnectDB() (*sql.DB, error) {
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
 	db, err := sql.Open("postgres", psqlInfo)
-	
+
 	//verifica se houve erro na conexão
 	if err != nil {
 		return nil, err
@@ -38,7 +44,7 @@ func ConnectDB() (*sql.DB, error) {
 		panic(err)
 	}
 	//se a conexão foi bem sucedida vai aparecer essa mensagem no terminal
-	fmt.Println("Connected to " + dbname)
+	fmt.Println("Conectado ao banco " + dbname)
 
 	return db, nil
 }

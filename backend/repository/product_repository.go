@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+
 	"github.com/Rayza-Souto/Desafio-Rayza-LAIOB/backend/model"
 )
 
@@ -21,7 +22,7 @@ func NewProductRepository(connection *sql.DB) ProductRepository {
 // GetAllProducts lista todos os produtos do banco de dados
 func (pr *ProductRepository) GetProducts() ([]model.Product, error) {
 
-	query := "SELECT id, nome_produto, preco, quantidade, descricao FROM product"
+	query := "SELECT id, nome, preco, quantidade, descricao FROM product"
 	rows, err := pr.connection.Query(query)
 	if err != nil {
 		fmt.Println(err)
@@ -62,7 +63,7 @@ func (pr *ProductRepository) CreateProduct(product model.Product) (int, error) {
 	var id int
 	//prepara a query de inserção do produto
 	query, err := pr.connection.Prepare("INSERT INTO product" +
-		"(nome_produto, preco, quantidade, descricao)" +
+		"(nome, preco, quantidade, descricao)" +
 		" VALUES ($1, $2, $3, $4) RETURNING id")
 
 	//verifica se houve erro ao preparar a query
@@ -116,7 +117,7 @@ func (pr *ProductRepository) GetProductById(id_product int) (*model.Product, err
 // UpdateProduct atualiza os dados de um produto existente
 func (pr *ProductRepository) UpdateProduct(id int, product model.Product) error {
 	query, err := pr.connection.Prepare("UPDATE product" +
-		" SET nome_produto = $1, preco = $2, quantidade = $3, descricao = $4" +
+		" SET nome = $1, preco = $2, quantidade = $3, descricao = $4" +
 		" WHERE id = $5")
 
 	// verifica se houve erro ao preparar a query

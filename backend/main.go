@@ -27,7 +27,7 @@ func main() {
 	ProductController := controller.NewProductController(ProductUseCase)
 
 	//criadas as rotas
-	server.GET("/products", ProductController.GetProducts)
+	server.GET("/product", ProductController.GetProducts)
 	server.POST("/product", ProductController.CreateProduct)
 	server.GET("/product/:productId", ProductController.GetProductById)
 	server.PUT("/product/:productId", ProductController.UpdateProduct)
