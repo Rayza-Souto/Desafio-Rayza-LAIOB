@@ -33,7 +33,6 @@ Este projeto atende ao desafio de criar um front-end que consome uma API REST de
 
 Crie um banco PostgreSQL local ou use o Docker Compose:
 
-```sql
 CREATE DATABASE produtosdb;
 CREATE TABLE produtos (
   id SERIAL PRIMARY KEY,
