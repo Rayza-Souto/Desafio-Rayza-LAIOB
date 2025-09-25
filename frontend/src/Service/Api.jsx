@@ -7,11 +7,15 @@ const apiUrl = import.meta.env.VITE_API_URL;
 export const getProdutos = async () => {
     try {
         const response = await axios.get(apiUrl);
+        if (!response.data || response.data.length === 0) {
+            return [];
+        }
         return response.data;
     } catch (error) {
         console.error('Erro ao listar produtos:', error);
         throw error;
     }
+
 };
 
 //função para buscar um produto pelo ID
@@ -27,13 +31,13 @@ export const getProdutoById = async (id) => {
 
 //função para criar um novo produto
 export const createProduto = async (produto) => {
-  try {
-    const response = await axios.post(apiUrl, produto);
-    return response.data; // retorna o produto criado com ID
-  } catch (error) {
-    console.error('Erro ao criar produto:', error);
-    throw error;
-  }
+    try {
+        const response = await axios.post(apiUrl, produto);
+        return response.data; // retorna o produto criado com ID
+    } catch (error) {
+        console.error('Erro ao criar produto:', error);
+        throw error;
+    }
 };
 
 //função para atualizar um produto existente

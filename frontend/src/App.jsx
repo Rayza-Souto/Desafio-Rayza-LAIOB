@@ -25,6 +25,9 @@ function App() {
     try {
       const data = await getProdutos();
       setProdutos(data);
+      if (data.length === 0) {
+        setMensagem('Nenhum produto encontrado');
+      }
     } catch (error) {
       console.error('Erro ao listar produtos:', error);
       setMensagem('Erro ao listar produtos');
@@ -73,7 +76,7 @@ function App() {
       await deleteProduto(id);
       setProdutos(prev => prev.filter(p => p.id !== id));
       setMensagem('Produto deletado com sucesso');
-      if (produtoSelecionado?.id === id) setProdutoSelecionado(null); 
+      if (produtoSelecionado?.id === id) setProdutoSelecionado(null);
     } catch (error) {
       console.error(`Erro ao deletar produto ${id}:`, error);
       setMensagem(`Erro ao deletar produto ${id}`);
@@ -110,7 +113,6 @@ function App() {
 
       <button onClick={listarProdutos}>Listar Produtos</button>
       <ul>
-        {console.log('Produtos antes do map:', produtos)}
         {produtos.map(produto => (
           <li key={produto.id}>
             {produto.nome} - ${produto.preco}
@@ -154,7 +156,7 @@ function App() {
         }}
       >
         <input type="text" placeholder="Nome" ref={nomeRef} required />
-        <input type="number" placeholder="Preço" ref={precoRef} required />
+        <input type="text" inputMode='numeric' placeholder="Preço" ref={precoRef} required />
         <input type="number" placeholder="Quantidade" ref={quantidadeRef} required />
         <input type="text" placeholder="Descrição" ref={descricaoRef} required />
         <button type="submit">{produtoSelecionado ? 'Atualizar' : 'Criar'} Produto</button>
