@@ -16,6 +16,8 @@ function App() {
   const [produtoSelecionado, setProdutoSelecionado] = useState(null);
   const [mensagem, setMensagem] = useState('');
   const [mostrarLista, setMostrarLista] = useState(false);
+  const [idBusca, setIdBusca] = useState(''); // para armazenar o ID do input
+
 
   const nomeRef = useRef();
   const precoRef = useRef();
@@ -54,9 +56,9 @@ function App() {
     try {
       const data = await getProdutos();
       setProdutos(data);
-      mostrarMensagem(data.length === 0 ? 'Nenhum produto encontrado' : '');
+      mostrarMensagem(data.length === 0 ? 'Nenhum produto encontrado' : '', 9000);
     } catch (error) {
-      mostrarMensagem('Erro ao listar produtos');
+      mostrarMensagem('Erro ao listar produtos', 9000);
     }
   };
 
@@ -67,7 +69,7 @@ function App() {
       setProdutoSelecionado(data);
       mostrarMensagem('');
     } catch (error) {
-      mostrarMensagem(`Erro ao buscar produto ${id}`);
+      mostrarMensagem(`Erro ao buscar produto ${id}`, 9000);
     }
   };
 
@@ -76,10 +78,10 @@ function App() {
     try {
       const novoProduto = await createProduto(produto);
       setProdutos(prev => [...prev, novoProduto]);
-      mostrarMensagem('Produto criado com sucesso');
+      mostrarMensagem('Produto criado com sucesso', 9000);
       setProdutoSelecionado(null);
     } catch (error) {
-      mostrarMensagem('Erro ao criar produto');
+      mostrarMensagem('Erro ao criar produto', 9000);
     }
   };
 
@@ -91,10 +93,10 @@ function App() {
       //vai atualizar a descrição do produto assim que a atualização for feita
       if (produtoSelecionado?.id === id) { setProdutoSelecionado(produtoAtualizado) };
       setProdutoSelecionado(null);
-      mostrarMensagem('Produto atualizado com sucesso');
+      mostrarMensagem('Produto atualizado com sucesso', 9000);
 
     } catch (error) {
-      mostrarMensagem(`Erro ao atualizar produto ${id}`);
+      mostrarMensagem(`Erro ao atualizar produto ${id}`, 9000);
     }
   };
 
@@ -103,10 +105,10 @@ function App() {
     try {
       await deleteProduto(id);
       setProdutos(prev => prev.filter(p => p.id !== id));
-      mostrarMensagem('Produto deletado com sucesso');
+      mostrarMensagem('Produto deletado com sucesso', 9000);
       if (produtoSelecionado?.id === id) setProdutoSelecionado(null);
     } catch (error) {
-      mostrarMensagem(`Erro ao deletar produto ${id}`);
+      mostrarMensagem(`Erro ao deletar produto ${id}`, 9000);
     }
   };
 
@@ -131,10 +133,15 @@ function App() {
     <div className="container-fluid">
       <h1>Gerenciamento de Produtos</h1><br />
 
+      <h2>Pesquise o produto</h2>
+      <input type="number" value={idBusca} min="0" placeholder="ID" onChange={(e) => setIdBusca(e.target.value)} />
+      <button className="btn btn-success" onClick={() => buscarProdutoPorId(idBusca)}>Pesquisar</button>
+      <p></p>
+
       <button onClick={() => {
         if (!mostrarLista) listarProdutos();
         setMostrarLista(prev => !prev);
-      }} className="btn btn-primary" > {mostrarLista ? 'Ocultar' : 'Mostrar'} Produtos</button>
+      }} className="btn btn-primary" > {mostrarLista ? 'Ocultar' : 'Mostrar'} Todos os Produtos</button>
 
       {mostrarLista && (
         <ul>
@@ -151,9 +158,10 @@ function App() {
       {produtoSelecionado && (
         <div>
           <h2>Detalhes do Produto</h2>
+          <p>ID: {produtoSelecionado.id}</p>
           <p>Nome: {produtoSelecionado.nome}</p>
           <p>Preço: ${produtoSelecionado.preco}</p>
-          <p>Quantidade: ${produtoSelecionado.quantidade}</p>
+          <p>Quantidade: {produtoSelecionado.quantidade}</p>
           <p>Descrição: {produtoSelecionado.descricao}</p>
           <button className="btn btn-success" onClick={() => setProdutoSelecionado(null)}>Fechar</button>
         </div>
@@ -162,8 +170,8 @@ function App() {
       <h2 className='AtualizaCriaProd'>{produtoSelecionado ? 'Atualizar Produto' : 'Criar Produto'}</h2>
       <form onSubmit={handleSubmit}>
         <input type="text" placeholder="Nome" ref={nomeRef} required />
-        <input type="number" step="0.01" placeholder="Preço" ref={precoRef} required />
-        <input type="number" placeholder="Quantidade" ref={quantidadeRef} required />
+        <input type="number" min="0" step="0.01" placeholder="Preço" ref={precoRef} required />
+        <input type="number" min="0" placeholder="Quantidade" ref={quantidadeRef} required />
         <input type="text" placeholder="Descrição" ref={descricaoRef} required />
         <button type="submit" className="btn btn-success">{produtoSelecionado ? 'Atualizar' : 'Criar'} Produto</button>
       </form>
