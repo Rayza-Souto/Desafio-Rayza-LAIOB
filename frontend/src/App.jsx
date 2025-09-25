@@ -73,7 +73,7 @@ function App() {
       await deleteProduto(id);
       setProdutos(prev => prev.filter(p => p.id !== id));
       setMensagem('Produto deletado com sucesso');
-      if (produtoSelecionado? .id === id) setProdutoSelecionado(null); 
+      if (produtoSelecionado?.id === id) setProdutoSelecionado(null); 
     } catch (error) {
       console.error(`Erro ao deletar produto ${id}:`, error);
       setMensagem(`Erro ao deletar produto ${id}`);
@@ -110,7 +110,8 @@ function App() {
 
       <button onClick={listarProdutos}>Listar Produtos</button>
       <ul>
-        {produtos.map((produto) => (
+        {console.log('Produtos antes do map:', produtos)}
+        {produtos.map(produto => (
           <li key={produto.id}>
             {produto.nome} - ${produto.preco}
             <button onClick={() => buscarProdutoPorId(produto.id)}>Ver Detalhes</button>
