@@ -194,7 +194,7 @@ curl -X DELETE http://localhost:8000/produtos/1
 
 ---
 
-📌 Notas
+##📌 Notas
 Todos os endpoints retornam application/json.
 
 Caso use Docker, substitua localhost pelo nome do contêiner/host configurado no docker-compose.
