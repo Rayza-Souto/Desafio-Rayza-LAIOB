@@ -170,26 +170,30 @@ Status de retorno:
 
 ---
 
-## 🛠️ Exemplos com cURL
+## 🛠️ Exemplos
+
+O frontend deste projeto utiliza a biblioteca axios para se comunicar com a API.
+Se quiser testar manualmente, você pode usar ferramentas como curl ou Postman, mas normalmente isso não é necessário, pois o frontend faz as requisições automaticamente.
+
 
 Listar produtos:
-curl http://localhost:8000/produtos
+axios.get http://localhost:8000/produtos
 
 Buscar produto 1:
-curl http://localhost:8000/produtos/1
+axios.get http://localhost:8000/produtos/1
 
 Criar produto:
-curl -X POST http://localhost:8000/produtos \
+axios.POST http://localhost:8000/produtos \
   -H "Content-Type: application/json" \
   -d '{"nome":"Teclado","preco":99.9,"quantidade":5,"descricao":"Teclado mecânico"}'
 
 Atualizar produto:
-curl -X PUT http://localhost:8000/produtos/1 \
+axios.PUT http://localhost:8000/produtos/1 \
   -H "Content-Type: application/json" \
   -d '{"nome":"Teclado Gamer","preco":120.0,"quantidade":4,"descricao":"Switch red"}'
 
 Excluir produto:
-curl -X DELETE http://localhost:8000/produtos/1
+axios.DELETE http://localhost:8000/produtos/1
 
 ---
 
