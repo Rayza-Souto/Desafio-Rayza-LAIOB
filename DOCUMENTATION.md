@@ -168,10 +168,9 @@ Status de retorno:
 | 404 Not Found             | Recurso não encontrado   | Produto não existe para o ID informado               |
 | 500 Internal Server Error | Erro interno no servidor | Problemas de conexão ao banco ou exceção não tratada |
 
-
 ---
 
-##🛠️ Exemplos com cURL
+## 🛠️ Exemplos com cURL
 
 Listar produtos:
 curl http://localhost:8000/produtos
@@ -194,7 +193,8 @@ curl -X DELETE http://localhost:8000/produtos/1
 
 ---
 
-##📌 Notas
+## 📌 Notas
+
 Todos os endpoints retornam application/json.
 
 Caso use Docker, substitua localhost pelo nome do contêiner/host configurado no docker-compose.
