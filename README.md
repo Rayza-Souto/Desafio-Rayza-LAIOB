@@ -128,12 +128,6 @@ Layout simples e intuitivo
 
 ---
 
-## 📸 Prints ou GIF
-
-
-
-
----
 
 ## 🔒 Tratamento de Erros
 
