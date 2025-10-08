@@ -8,9 +8,9 @@ Este projeto atende ao desafio de criar um front-end que consome uma API REST de
 ## 🚀 Tecnologias Utilizadas
 
 - **Front-end:** React + Vite + Axios
-- **Back-end:** Go (Golang) + Gin/Fiber (ajuste se você usou outro framework)
-- **Banco de dados:** PostgreSQL (poderia ser SQLite, mas optamos por Postgres)
-- **Containerização:** Docker e Docker Compose (opcional)
+- **Back-end:** Go (Golang)
+- **Banco de dados:** PostgreSQL
+- **Containerização:** Docker e Docker Compose
 - **Variáveis de ambiente:** `.env` para configurar API e banco
 
 ---
